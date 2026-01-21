@@ -104,7 +104,7 @@ public class BukkitPlaceholderAPIHook extends Hook {
         @AllArgsConstructor
         private enum Placeholder {
             CLAIM_BLOCKS((plugin, user) -> Long.toString(plugin.getCachedClaimBlocks(user))),
-            CLAIM_BLOCKS_FORMATTED((plugin, user) -> String.format("%,d", plugin.getCachedClaimBlocks(user))),
+            CLAIM_BLOCKS_FORMATTED((plugin, user) -> formatShort(plugin.getCachedClaimBlocks(user))),
             CURRENT_IS_CLAIMED((plugin, user) -> formatBoolean(plugin.getClaimAt(user.getPosition()).isPresent())),
             CURRENT_CLAIM_OWNER((plugin, user) -> plugin.getClaimWorld(user.getPosition().getWorld())
                     .flatMap(world -> world.getClaimAt(user.getPosition())
@@ -149,6 +149,15 @@ public class BukkitPlaceholderAPIHook extends Hook {
             @NotNull
             private static String formatBoolean(boolean bool) {
                 return bool ? PlaceholderAPIPlugin.booleanTrue() : PlaceholderAPIPlugin.booleanFalse();
+            }
+
+            @NotNull
+            private static String formatShort(long value) {
+                if (value < 1_000) return String.valueOf(value);
+                if (value < 1_000_000) return String.format("%.1fk", value / 1000.0);
+                if (value < 1_000_000_000) return String.format("%.1fm", value / 1_000_000.0);
+                if (value < 1_000_000_000_000L) return String.format("%.1fb", value / 1_000_000_000.0);
+                return String.format("%.1ft", value / 1_000_000_000_000.0);
             }
 
             @NotNull
