@@ -83,10 +83,10 @@ public class BukkitUser extends OnlineUser {
         final PlayerInventory inventory = bukkitPlayer.getInventory();
         final List<ItemStack> toCheck = List.of(inventory.getItemInMainHand(), inventory.getItemInOffHand());
         return toCheck.stream().anyMatch(
-                item -> item != null && item.getType().getKey().getKey().equals(tool.material()) && (
-                        !tool.useCustomModelData() || item.hasItemMeta()
-                                                      && item.getItemMeta() != null && item.getItemMeta().hasCustomModelData()
-                                                      && item.getItemMeta().getCustomModelData() == tool.customModelData()
+                item -> item != null && item.getType().getKey().toString().equals(tool.material()) && (
+                        tool.useCustomModelData()
+                                ? (item.hasItemMeta() && item.getItemMeta() != null && item.getItemMeta().hasCustomModelData() && item.getItemMeta().getCustomModelData() == tool.customModelData())
+                                : (!item.hasItemMeta())
                 )
         );
     }
