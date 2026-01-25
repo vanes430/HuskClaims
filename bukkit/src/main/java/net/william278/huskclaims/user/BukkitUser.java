@@ -82,11 +82,16 @@ public class BukkitUser extends OnlineUser {
     public boolean isHolding(@NotNull InspectorCallbackProvider.InspectionTool tool) {
         final PlayerInventory inventory = bukkitPlayer.getInventory();
         final List<ItemStack> toCheck = List.of(inventory.getItemInMainHand(), inventory.getItemInOffHand());
+        final InspectorCallbackProvider.InspectionTool inspectionTool = plugin.getSettings().getClaims().getInspectionToolData();
+        final boolean strict = tool.material().equals(inspectionTool.material())
+                && tool.useCustomModelData() == inspectionTool.useCustomModelData()
+                && tool.customModelData() == inspectionTool.customModelData();
+
         return toCheck.stream().anyMatch(
                 item -> item != null && item.getType().getKey().toString().equals(tool.material()) && (
                         tool.useCustomModelData()
                                 ? (item.hasItemMeta() && item.getItemMeta() != null && item.getItemMeta().hasCustomModelData() && item.getItemMeta().getCustomModelData() == tool.customModelData())
-                                : (!item.hasItemMeta())
+                                : (!strict || !item.hasItemMeta())
                 )
         );
     }
